@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:dartssh2/dartssh2.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'connection_service.dart';
@@ -69,6 +73,7 @@ class LGService {
       final name = filename ?? 'default';
       final fileName = '$name.kml';
 
+      print(kmlContent);
       await client.run('echo \'$kmlContent\' > /var/www/html/$fileName');
 
       await client
@@ -200,6 +205,63 @@ class LGService {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error shutting down: ${e.toString()}')),
       );
+    }
+  }
+
+  Future<void> displayKml() async {
+    try {
+      final _client = ref.read(sshClientProvider);
+
+      await _client?.execute('echo "playtour=exit" > /tmp/query.txt');
+      await _client?.execute('echo "exittour=true" > /tmp/query.txt');
+      await _client?.execute('echo "cleanup=true" > /tmp/query.txt');
+
+      await Future.delayed(Duration(seconds: 2));
+
+      const flyToCommand =
+          'echo "flytoview=<LookAt><longitude>72.88669853853224</longitude><latitude>19.08005600418717</latitude><altitude>18.38584586864635</altitude><heading>44.84420422623351</heading><tilt>0</tilt><range>4818.009164065006</range><altitudeMode>absolute</altitudeMode></LookAt>" > /tmp/query.txt';
+      await _client?.execute(flyToCommand);
+
+      await Future.delayed(Duration(seconds: 1));
+
+      await _client?.execute(
+          'echo "loadkml=/var/www/html/lg_mumbai.kml" > /tmp/query.txt');
+
+      print('KML display command sent');
+    } catch (e) {
+      print('Error displaying KML: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> uploadKmlFile(WidgetRef ref) async {
+    try {
+      final _client = ref.read(sshClientProvider);
+      final sftp = await _client?.sftp();
+
+      // First, get the file content from assets
+      ByteData data = await rootBundle.load('assets/lg_mumbai.kml');
+      final bytes = data.buffer.asUint8List();
+
+      final filename = 'lg_mumbai.kml';
+      double uploadProgress = 0.0;
+
+      final remoteFile = await sftp?.open('/var/www/html/$filename',
+          mode: SftpFileOpenMode.create |
+              SftpFileOpenMode.truncate |
+              SftpFileOpenMode.write);
+
+      var fileSize = bytes.length;
+
+      await remoteFile?.write(Stream.value(bytes), onProgress: (progress) {
+        uploadProgress = progress / fileSize;
+        print('Upload progress: ${(uploadProgress * 100).toStringAsFixed(2)}%');
+      });
+
+      print('File uploaded successfully!');
+      await displayKml();
+    } catch (e) {
+      print('Error uploading file: $e');
     }
   }
 }

@@ -42,7 +42,7 @@ class LGService {
                           <ScreenOverlay>
                               <name>Logo</name>
                               <Icon>
-                                  <href>https://raw.githubusercontent.com/divyanshkul/LG_T2/main/assets/GSoC_LGC.png1.42</href>
+                                  <href>https://raw.githubusercontent.com/divyanshkul/LG_T2/main/assets/GSoC_LGC.png</href>
                               </Icon>
                               <overlayXY x="0" y="1" xunits="fraction" yunits="fraction"/>
                               <screenXY x="0.02" y="0.95" xunits="fraction" yunits="fraction"/>

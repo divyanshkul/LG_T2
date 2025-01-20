@@ -1,16 +1,19 @@
-# lg_t2
+# LG Controller [Task 2]
 
-A new Flutter project.
+A Flutter application designed to control and manage Liquid Galaxy systems. This app provides an interface for uploading and displaying KML files, managing the LG rig, and controlling various display functions.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+### KML Management
 
-A few resources to get you started if this is your first Flutter project:
+- Upload KML files to Liquid Galaxy
+- Preview KML content before sending
+- Display KML visualizations on the LG rig
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### System Controls
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Display logo on left screen
+- Clean all screens
+- Relaunch LG system
+- Power off LG rig
+- Set slaves refresh interval

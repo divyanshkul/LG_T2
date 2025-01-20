@@ -15,6 +15,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
   final _ipController = TextEditingController();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _totalScreensController = TextEditingController();
   bool _isConnecting = false;
 
   Future<void> _connect() async {
@@ -136,7 +137,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                       TextFormField(
                         controller: _passwordController,
                         decoration: const InputDecoration(
-                          labelText: 'Username',
+                          labelText: 'Password',
                           labelStyle: TextStyle(color: Colors.white),
                           border: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
@@ -147,7 +148,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Colors.white),
                           ),
-                          prefixIcon: Icon(Icons.person, color: Colors.white),
+                          prefixIcon: Icon(Icons.password, color: Colors.white),
                           fillColor: Colors.transparent,
                         ),
                         cursorColor: Colors.white,
@@ -155,6 +156,33 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter password';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _totalScreensController,
+                        decoration: const InputDecoration(
+                          labelText: 'Total Screens in Rig',
+                          labelStyle: TextStyle(color: Colors.white),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          prefixIcon: Icon(Icons.computer, color: Colors.white),
+                          fillColor: Colors.transparent,
+                        ),
+                        cursorColor: Colors.white,
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter number of screen';
                           }
                           return null;
                         },

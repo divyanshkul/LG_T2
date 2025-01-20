@@ -7,8 +7,9 @@ const sampleKMLs = [
     assetPath: 'assets/lg_mumbai.kml',
   ),
   KMLFile(
-    name: 'Your Secosnd KML',
-    description: 'Description of second KML',
+    name: 'LG Headquarters',
+    description:
+        'This KML sets up a placeholder at an imaginary LG headquarters location',
     assetPath: 'assets/lg_hq.kml',
   ),
 ];

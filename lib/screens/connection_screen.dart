@@ -82,13 +82,23 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _ipController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'IP Address',
-                          border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.computer),
-                          filled: true,
-                          fillColor: Theme.of(context).colorScheme.background,
+                          labelStyle:
+                              TextStyle(color: Colors.white), // Label color
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          prefixIcon: Icon(Icons.computer, color: Colors.white),
+                          fillColor: Colors.transparent,
                         ),
+                        cursorColor: Colors.white,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter IP address';
@@ -99,13 +109,22 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _usernameController,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Username',
-                          border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.person),
-                          filled: true,
-                          fillColor: Theme.of(context).colorScheme.background,
+                          labelStyle: TextStyle(color: Colors.white),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          prefixIcon: Icon(Icons.person, color: Colors.white),
+                          fillColor: Colors.transparent,
                         ),
+                        cursorColor: Colors.white,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter username';
@@ -116,13 +135,22 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                       const SizedBox(height: 16),
                       TextFormField(
                         controller: _passwordController,
-                        decoration: InputDecoration(
-                          labelText: 'Password',
-                          border: const OutlineInputBorder(),
-                          prefixIcon: const Icon(Icons.lock),
-                          filled: true,
-                          fillColor: Theme.of(context).colorScheme.background,
+                        decoration: const InputDecoration(
+                          labelText: 'Username',
+                          labelStyle: TextStyle(color: Colors.white),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white),
+                          ),
+                          prefixIcon: Icon(Icons.person, color: Colors.white),
+                          fillColor: Colors.transparent,
                         ),
+                        cursorColor: Colors.white,
                         obscureText: true,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -143,6 +171,7 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                       onPressed: _isConnecting ? null : _connect,
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(16),
+                        backgroundColor: Colors.green,
                       ),
                       child: _isConnecting
                           ? const SizedBox(
@@ -153,7 +182,9 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text('Connect'),
+                          : const Text(
+                              'Connect',
+                            ),
                     ),
                   ),
                   if (isConnected) ...[

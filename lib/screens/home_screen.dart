@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/kml_preview_dialog.dart';
 import '../widgets/kml_selector_tile.dart';
@@ -67,7 +68,7 @@ class HomeScreen extends ConsumerWidget {
             KMLSelectorTile(
               onKMLSelected: isConnected
                   ? (kml) {
-                      lgService.sendKML(context, kml.content);
+                      lgService.sendKML(context, kml);
                     }
                   : null,
               onPreviewKML: (kml) {

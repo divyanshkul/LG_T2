@@ -4,6 +4,7 @@ import 'package:dartssh2/dartssh2.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
+import 'package:lg_t2/models/kml_file.dart';
 import 'connection_service.dart';
 
 class LGService {
@@ -62,30 +63,6 @@ class LGService {
       print('Error displaying logo: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error displaying logo: ${e.toString()}')),
-      );
-    }
-  }
-
-  Future<void> sendKML(BuildContext context, String kmlContent,
-      {String? filename}) async {
-    try {
-      final client = _getClient(context);
-      final name = filename ?? 'default';
-      final fileName = '$name.kml';
-
-      print(kmlContent);
-      await client.run('echo \'$kmlContent\' > /var/www/html/$fileName');
-
-      await client
-          .run('echo "http://lg1:81/$fileName" > /var/www/html/kmls.txt');
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('KML sent successfully')),
-      );
-    } catch (e) {
-      print('Error sending KML: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error sending KML: ${e.toString()}')),
       );
     }
   }
@@ -208,7 +185,7 @@ class LGService {
     }
   }
 
-  Future<void> displayKml() async {
+  Future<void> displayKml(KMLFile kmlFile) async {
     try {
       final _client = ref.read(sshClientProvider);
 
@@ -218,32 +195,82 @@ class LGService {
 
       await Future.delayed(Duration(seconds: 2));
 
+      final filename = kmlFile.assetPath.split('/').last;
+      print("filename: $filename");
+
+      await _client?.execute('chmod 644 /var/www/html/$filename');
+
       const flyToCommand =
-          'echo "flytoview=<LookAt><longitude>72.88669853853224</longitude><latitude>19.08005600418717</latitude><altitude>18.38584586864635</altitude><heading>44.84420422623351</heading><tilt>0</tilt><range>4818.009164065006</range><altitudeMode>absolute</altitudeMode></LookAt>" > /tmp/query.txt';
+          'echo "flytoview=<LookAt><longitude>72.88528959979917</longitude><latitude>19.0780128323235</latitude><altitude>20.94323213204202</altitude><heading>35.002297190581913546</heading><tilt>0</tilt><range>4334.522587212268</range><altitudeMode>absolute</altitudeMode></LookAt>" > /tmp/query.txt';
       await _client?.execute(flyToCommand);
 
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(Duration(seconds: 2));
 
-      await _client?.execute(
-          'echo "loadkml=/var/www/html/lg_mumbai.kml" > /tmp/query.txt');
+      await _client
+          ?.execute('echo "http://lg1:81/$filename" > /var/www/html/kmls.txt');
 
-      print('KML display command sent');
+      print('KML display command sent for ${kmlFile.name}');
     } catch (e) {
       print('Error displaying KML: $e');
       rethrow;
     }
   }
 
-  Future<void> uploadKmlFile(WidgetRef ref) async {
+  // Future<void> displayKml() async {
+  //   try {
+  //     final _client = ref.read(sshClientProvider);
+
+  //     // Clear existing content
+  //     await _client?.execute('echo "playtour=exit" > /tmp/query.txt');
+  //     await _client?.execute('echo "exittour=true" > /tmp/query.txt');
+  //     await _client?.execute('echo "cleanup=true" > /tmp/query.txt');
+
+  //     await Future.delayed(Duration(seconds: 2));
+
+  //     // First try to verify file exists and has correct permissions
+  //     await _client?.execute('chmod 644 /var/www/html/testing.kml');
+
+  //     // Try a different loading approach: Add to kmls.txt first
+  //     await _client?.execute(
+  //         'echo "/var/www/html/testing.kml" > /var/www/html/kmls.txt');
+
+  //     // Set the view
+  //     const flyToCommand =
+  //         'echo "flytoview=<LookAt><longitude>72.88528959979917</longitude><latitude>19.0780128323235</latitude><altitude>20.94323213204202</altitude><heading>0.02297190581913546</heading><tilt>0</tilt><range>4334.522587212268</range><altitudeMode>absolute</altitudeMode></LookAt>" > /tmp/query.txt';
+  //     await _client?.execute(flyToCommand);
+
+  //     await Future.delayed(Duration(seconds: 2));
+
+  //     // Try these different loading methods one at a time:
+
+  //     // Method 1: Direct load
+  //     // await _client?.execute(
+  //     //     'echo "loadkml=/var/www/html/testing.kml" > /tmp/query.txt');
+
+  //     // // Method 2: Using network link
+  //     await _client?.execute(
+  //         'echo "http://lg1:81/testing.kml" > /var/www/html/kmls.txt');
+
+  //     // // Method 3: Using search command
+  //     // await _client
+  //     //     ?.execute('echo "search=http://lg1:81/testing.kml" > /tmp/query.txt');
+
+  //     print('KML displasday command sent');
+  //   } catch (e) {
+  //     print('Error displaying KML: $e');
+  //     rethrow;
+  //   }
+  // }
+
+  Future<void> uploadKmlFile(KMLFile kmlFile) async {
     try {
       final _client = ref.read(sshClientProvider);
       final sftp = await _client?.sftp();
 
-      // First, get the file content from assets
-      ByteData data = await rootBundle.load('assets/lg_mumbai.kml');
+      ByteData data = await rootBundle.load(kmlFile.assetPath);
       final bytes = data.buffer.asUint8List();
 
-      final filename = 'lg_mumbai.kml';
+      final filename = kmlFile.assetPath.split('/').last;
       double uploadProgress = 0.0;
 
       final remoteFile = await sftp?.open('/var/www/html/$filename',
@@ -258,10 +285,28 @@ class LGService {
         print('Upload progress: ${(uploadProgress * 100).toStringAsFixed(2)}%');
       });
 
-      print('File uploaded successfully!');
-      await displayKml();
+      print('${kmlFile.name} uploaded successfully!');
+      await displayKml(kmlFile);
     } catch (e) {
       print('Error uploading file: $e');
+    }
+  }
+
+  Future<void> sendKML(BuildContext context, KMLFile kmlFile) async {
+    try {
+      await uploadKmlFile(kmlFile);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${kmlFile.name} sent successfully!')),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error sending KML: $e')),
+        );
+      }
     }
   }
 }

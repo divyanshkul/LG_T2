@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import '../models/kml_file.dart';
 
 class KMLPreviewDialog extends StatelessWidget {
@@ -8,6 +9,14 @@ class KMLPreviewDialog extends StatelessWidget {
     super.key,
     required this.kml,
   });
+
+  Future<String> _loadKMLContent() async {
+    try {
+      return await rootBundle.loadString(kml.assetPath);
+    } catch (e) {
+      return 'Error loading KML content: $e';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,21 +54,30 @@ class KMLPreviewDialog extends StatelessWidget {
             const Divider(),
             const SizedBox(height: 8),
             Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.background,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: SingleChildScrollView(
-                  child: SelectableText(
-                    kml.content,
-                    style: const TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 14,
+              child: FutureBuilder<String>(
+                future: _loadKMLContent(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  return Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.background,
+                      borderRadius: BorderRadius.circular(4),
                     ),
-                  ),
-                ),
+                    child: SingleChildScrollView(
+                      child: SelectableText(
+                        snapshot.data ?? 'Error loading KML content',
+                        style: const TextStyle(
+                          fontFamily: 'monospace',
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],

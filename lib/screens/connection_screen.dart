@@ -166,29 +166,31 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
               const SizedBox(height: 24),
               Row(
                 children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _isConnecting ? null : _connect,
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.all(16),
-                        backgroundColor: Colors.green,
-                      ),
-                      child: _isConnecting
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
+                  if (!isConnected) ...[
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _isConnecting ? null : _connect,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.all(16),
+                          backgroundColor: Colors.green,
+                        ),
+                        child: _isConnecting
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : const Text(
+                                'Connect',
+                                style: TextStyle(color: Colors.white),
                               ),
-                            )
-                          : const Text(
-                              'Connect',
-                            ),
+                      ),
                     ),
-                  ),
+                  ],
                   if (isConnected) ...[
-                    const SizedBox(width: 16),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () =>
@@ -197,7 +199,10 @@ class _ConnectionScreenState extends ConsumerState<ConnectionScreen> {
                           padding: const EdgeInsets.all(16),
                           backgroundColor: Colors.red,
                         ),
-                        child: const Text('Disconnect'),
+                        child: const Text(
+                          'Disconnect',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                   ],
